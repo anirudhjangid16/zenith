@@ -1,0 +1,11 @@
+groups:
+  - name: zenith_alerts
+    rules:
+      - alert: ZenithServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Zenith instance {{ $labels.instance }} is down"
+          description: "Service has been unreachable for more than 1 minute."

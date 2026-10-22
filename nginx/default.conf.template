@@ -1,0 +1,36 @@
+server {
+    listen 80;
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
+    server_tokens off;
+
+    location = /health {
+        default_type application/json;
+        add_header Cache-Control "no-store";
+        return 200 '{"status":"ok","service":"zenith","commit":"${APP_COMMIT}"}';
+    }
+
+    location = /metrics {
+        default_type text/plain;
+        return 200 '# HELP zenith_up Status of Zenith application\n# TYPE zenith_up gauge\nzenith_up 1\n';
+    }
+
+    location / {
+        try_files $uri $uri/ /index.html =404;
+    }
+}
+
+server {
+    listen 8081;
+    server_name _;
+
+    location = /stub_status {
+        stub_status;
+        access_log off;
+    }
+
+    location / {
+        return 404;
+    }
+}
